@@ -1,0 +1,29 @@
+[project]
+name = "reddit-sentiment-analyzer"
+version = "0.1.0"
+description = "Local-first tool to monitor sentiment trends across subreddits over time"
+requires-python = ">=3.11"
+dependencies = [
+    "praw>=7.7",
+    "vaderSentiment>=3.3",
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.29",
+    "apscheduler>=3.10",
+    "keyring>=25.2",
+    "pydantic>=2.7",
+    "anthropic>=0.25",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
