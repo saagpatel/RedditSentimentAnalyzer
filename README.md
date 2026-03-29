@@ -1,20 +1,46 @@
 # Reddit Sentiment Analyzer
 
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-009688?logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+[![Python](https://img.shields.io/badge/Python-3776ab?style=flat-square&logo=python)](#) [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#)
 
-A local-first tool that monitors sentiment trends across subreddits over time. Posts and comments are fetched via PRAW, scored with VADER, and served through a FastAPI backend to a React dashboard.
+> Track how the internet feels about anything — without the cloud
+
+Reddit Sentiment Analyzer is a local-first tool that monitors sentiment trends across subreddits over time. Posts and comments are fetched via PRAW, scored with VADER, and served through a FastAPI backend to a React dashboard with spike detection and optional Claude escalation for ambiguous signals.
 
 ## Features
 
-- **Background ingestion daemon** — polls tracked subreddits every 15 minutes via APScheduler; first run seeds `.hot()` + `.top(week)`, subsequent runs pull `.new()` incrementally
-- **VADER sentiment scoring** — compound, positive, negative, and neutral scores stored per post and comment
-- **6-hour sentiment buckets** — pre-aggregated into time-windowed averages with spike detection; queryable at 6h, 12h, and 1d resolution
+- **Background ingestion daemon** — polls tracked subreddits every 15 minutes via APScheduler; seeds with `.hot()` + `.top(week)` on first run, then pulls `.new()` incrementally
+- **VADER scoring** — compound, positive, negative, and neutral scores stored per post and comment
+- **6-hour sentiment buckets** — pre-aggregated time-windowed averages with spike detection at 6h, 12h, and 1d resolution
 - **Spike detection** — flags buckets where compound score deviates beyond a configurable threshold
-- **Optional LLM escalation** — ambiguous posts (low VADER confidence) can be rerouted to Claude for deeper classification with reasoning; disabled by default
 - **React dashboard** — time series chart, multi-subreddit comparison, word cloud, and spike detail panel
-- **Credentials via macOS Keychain** — no `.env` files; secrets stored with `keyring`
+- **Optional Claude escalation** — ambiguous posts routed to Claude for deeper classification with reasoning (disabled by default)
+- **macOS Keychain secrets** — credentials stored with `keyring`; no `.env` files with tokens on disk
+
+## Quick Start
+
+### Prerequisites
+- Python 3.11+
+- Reddit API credentials (client ID + secret from https://www.reddit.com/prefs/apps)
+- `uv` (recommended) or `pip`
+
+### Installation
+```bash
+git clone https://github.com/saagpatel/RedditSentimentAnalyzer
+cd RedditSentimentAnalyzer
+uv sync
+```
+
+### Usage
+```bash
+# Start the FastAPI backend
+uv run uvicorn app.main:app --reload
+
+# Start the React dashboard (separate terminal)
+cd frontend && npm install && npm run dev
+
+# Or start the ingestion daemon standalone
+uv run python -m app.daemon
+```
 
 ## Tech Stack
 
@@ -23,96 +49,14 @@ A local-first tool that monitors sentiment trends across subreddits over time. P
 | Ingestion | PRAW 7.7+, APScheduler 3.10 |
 | Sentiment | vaderSentiment 3.3+ |
 | Backend | FastAPI 0.111+, Uvicorn, Pydantic v2 |
-| Database | SQLite (local, no server required) |
+| Database | SQLite (local, no server) |
+| Frontend | React 19, Recharts, shadcn/ui |
 | LLM (optional) | Anthropic Claude via `anthropic` SDK |
-| Frontend | React 19, Recharts, D3, Vite |
 
-## Prerequisites
+## Architecture
 
-- Python 3.11+
-- Node.js 18+
-- macOS (credentials use macOS Keychain via `keyring`)
-- A Reddit script-type app — register at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps)
-
-## Getting Started
-
-**1. Install Python dependencies**
-
-```bash
-pip install -e ".[dev]"
-```
-
-**2. Store Reddit credentials in Keychain**
-
-```bash
-python scripts/setup_keyring.py
-```
-
-This prompts for your Reddit `client_id` and `client_secret` and stores them securely. It also verifies the PRAW connection before exiting.
-
-**3. Start the ingest daemon**
-
-```bash
-python -m backend.ingestion.ingest_daemon
-```
-
-To run a single cycle and exit (useful for testing):
-
-```bash
-python -m backend.ingestion.ingest_daemon --once --subreddit nba
-```
-
-**4. Start the API server**
-
-```bash
-uvicorn backend.main:app --reload
-```
-
-The API runs on `http://localhost:8000`. Health check: `GET /health`.
-
-**5. Start the frontend**
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The dashboard opens at `http://localhost:5173`.
-
-## Project Structure
-
-```
-RedditSentimentAnalyzer/
-├── backend/
-│   ├── api/
-│   │   └── routes/         # FastAPI routers: sentiment, posts, spikes
-│   ├── db/
-│   │   ├── schema.sql       # SQLite schema (auto-deployed on startup)
-│   │   └── queries.py       # All DB queries
-│   ├── ingestion/
-│   │   ├── ingest_daemon.py # Scheduler + ingest orchestration
-│   │   ├── praw_client.py   # Reddit API client with rate limiting
-│   │   └── post_processor.py# VADER scoring per post/comment
-│   ├── llm/
-│   │   └── escalation.py    # Optional Claude escalation for ambiguous posts
-│   ├── config.py            # Typed config (Pydantic), no .env
-│   └── main.py              # FastAPI app + CORS + lifespan
-├── frontend/
-│   └── src/
-│       ├── views/           # TimeSeriesView, ComparisonView, WordCloudView
-│       └── components/      # SubredditSelector, SpikeDetailPanel, etc.
-├── scripts/
-│   └── setup_keyring.py     # One-time credential setup
-└── tests/
-```
-
-## Screenshot
-
-![Dashboard screenshot](docs/screenshot.png)
-
-_Screenshot placeholder — run the app and capture your own._
+The ingestion daemon and the FastAPI server share a single SQLite database. The daemon writes to `posts`, `comments`, and `sentiment_buckets` tables; the API reads from them with no coupling beyond the schema. Bucket aggregation is a scheduled APScheduler job that runs SQL window functions over the raw scores — no in-memory aggregation. The React dashboard polls the REST API on a 60-second interval and renders multi-series Recharts line charts with Zustand state for filter/comparison controls.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT
