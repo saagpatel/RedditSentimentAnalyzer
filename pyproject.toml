@@ -11,7 +11,7 @@ dependencies = [
     "apscheduler>=3.10",
     "keyring>=25.2",
     "pydantic>=2.7",
-    "anthropic>=0.25",
+    "anthropic>=0.94.0",
 ]
 
 [project.optional-dependencies]
