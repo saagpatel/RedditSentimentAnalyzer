@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Local-first tool to monitor sentiment trends across subreddits over time"
 requires-python = ">=3.11"
 dependencies = [
-    "praw>=7.7",
+    "praw>=7.8.1",
     "vaderSentiment>=3.3",
     "fastapi>=0.111",
     "uvicorn[standard]>=0.29",
