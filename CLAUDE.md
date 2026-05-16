@@ -48,3 +48,56 @@ Local-first tool to monitor sentiment trends across subreddits over time. Ingest
 - Do not add Postgres or any other database — SQLite until 10M+ row threshold
 - Do not add features not in the current phase
 - Do not fire LLM escalation on render or in scheduled loops without the config flag explicitly enabled
+
+<!-- portfolio-context:start -->
+# Portfolio Context
+
+## What This Project Is
+
+RedditSentimentAnalyzer is a local-first dashboard for tracking sentiment trends across selected subreddits over time. It ingests Reddit posts/comments, stores historical samples in SQLite, scores sentiment with VADER by default, optionally escalates ambiguous cases to an LLM, and exposes trends, word clouds, and alerts through a FastAPI + React interface.
+
+## Current State
+
+**Phase 0: Foundation** — See IMPLEMENTATION-ROADMAP.md for tasks, acceptance criteria, and verification checklists.
+
+## Stack
+
+| Layer | Tech | Version |
+|-------|------|---------|
+| Reddit ingestion | PRAW | 7.7.1 |
+| Sentiment scoring | vaderSentiment | 3.3.2 |
+| Database | SQLite | bundled |
+| API server | FastAPI + Uvicorn | 0.111.0 / 0.29.0 |
+| Task scheduler | APScheduler | 3.10.4 |
+| LLM escalation (optional) | Anthropic SDK | 0.25.0 |
+| Frontend | React 18 + Vite 5 | — |
+| Charts | Recharts | 2.x |
+| Word cloud | D3 | 7.x |
+
+## How To Run
+
+```bash
+# Start the FastAPI backend
+uv run uvicorn app.main:app --reload
+
+# Start the React dashboard (separate terminal)
+cd frontend && npm install && npm run dev
+
+# Or start the ingestion daemon standalone
+uv run python -m app.daemon
+```
+
+## Known Risks
+
+- Do not write credentials to `.env`, config files, or any file that could be committed
+- Do not add cloud sync or any external data persistence — all data stays local
+- Do not change the SQLite schema without running a migration script
+- Do not add Postgres or any other database — SQLite until 10M+ row threshold
+- Do not add features not in the current phase
+- Do not fire LLM escalation on render or in scheduled loops without the config flag explicitly enabled
+
+## Next Recommended Move
+
+Use this context plus the README and supporting docs to resume the next active task, then promote the repo beyond minimum-viable by capturing a dedicated handoff, roadmap, or discovery artifact.
+
+<!-- portfolio-context:end -->
