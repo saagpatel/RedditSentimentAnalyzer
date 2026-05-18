@@ -9,7 +9,7 @@ dependencies = [
     "fastapi>=0.111",
     "uvicorn[standard]>=0.29",
     "apscheduler>=3.10",
-    "keyring>=25.2",
+    "keyring>=25.7.0",
     "pydantic>=2.7",
     "anthropic>=0.25",
 ]
