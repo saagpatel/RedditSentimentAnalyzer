@@ -184,8 +184,7 @@ class TestTopPosts:
     def test_url_field(self):
         resp = client.get("/api/posts/top", params={"subreddit": "nba"})
         post = resp.json()["posts"][0]
-        assert "reddit.com" in post["url"]
-        assert "nba" in post["url"]
+        assert post["url"] == "https://reddit.com/r/nba/comments/post_4"
 
     def test_subreddit_not_found(self):
         resp = client.get("/api/posts/top", params={"subreddit": "nonexistent"})
