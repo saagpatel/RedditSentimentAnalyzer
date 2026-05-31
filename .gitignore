@@ -32,3 +32,4 @@ venv/
 # Frontend (Phase 1+)
 frontend/node_modules/
 frontend/dist/
+CLAUDE.md.bak
