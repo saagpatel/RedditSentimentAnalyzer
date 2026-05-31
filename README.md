@@ -33,13 +33,13 @@ uv sync
 ### Usage
 ```bash
 # Start the FastAPI backend
-uv run uvicorn app.main:app --reload
+uv run uvicorn backend.main:app --reload
 
 # Start the React dashboard (separate terminal)
 cd frontend && npm install && npm run dev
 
 # Or start the ingestion daemon standalone
-uv run python -m app.daemon
+uv run python -m backend.ingestion.ingest_daemon
 ```
 
 ## Tech Stack
@@ -50,12 +50,12 @@ uv run python -m app.daemon
 | Sentiment | vaderSentiment 3.3+ |
 | Backend | FastAPI 0.111+, Uvicorn, Pydantic v2 |
 | Database | SQLite (local, no server) |
-| Frontend | React 19, Recharts, shadcn/ui |
+| Frontend | React 19, Recharts |
 | LLM (optional) | Anthropic Claude via `anthropic` SDK |
 
 ## Architecture
 
-The ingestion daemon and the FastAPI server share a single SQLite database. The daemon writes to `posts`, `comments`, and `sentiment_buckets` tables; the API reads from them with no coupling beyond the schema. Bucket aggregation is a scheduled APScheduler job that runs SQL window functions over the raw scores — no in-memory aggregation. The React dashboard re-fetches from the REST API when the subreddit or time range changes, rendering multi-series Recharts line charts with Zustand state for filter/comparison controls.
+The ingestion daemon and the FastAPI server share a single SQLite database. The daemon writes to `posts`, `comments`, and `sentiment_buckets` tables; the API reads from them with no coupling beyond the schema. Bucket aggregation is a scheduled APScheduler job that runs SQL window functions over the raw scores — no in-memory aggregation. The React dashboard re-fetches from the REST API when the subreddit or time range changes, rendering multi-series Recharts line charts with React state for filter/comparison controls.
 
 ## License
 

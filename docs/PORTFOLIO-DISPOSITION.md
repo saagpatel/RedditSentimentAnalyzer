@@ -30,11 +30,11 @@ Specifically verified on `origin/main`:
 - Tree on `origin/main`:
   - `backend/` — Python FastAPI service
   - `frontend/` — React dashboard
-  - **`launchd/`** — launchd plist(s) for macOS-server self-host
-  - **`nginx/`** — nginx config for reverse proxy
   - `pyproject.toml` (uv-managed Python deps)
   - `IMPLEMENTATION-ROADMAP.md`, `CHANGELOG.md`, `CLAUDE.md`,
     `SECURITY.md`, `CONTRIBUTING.md`
+  - Note: `launchd/` and `nginx/` deploy configs referenced in the
+    original disposition are **not present** in the committed tree.
 - Release scaffolding: GitHub Actions CI workflow present
   (`7e045da`); no `RELEASE-READINESS.md`-style runbook
 - Default branch: `main`
@@ -53,10 +53,12 @@ time-series charts, multi-subreddit comparison, word cloud, and
 spike detail panel. Ambiguous posts can optionally escalate to Claude
 for deeper classification with reasoning (disabled by default).
 Credentials live in macOS Keychain via `keyring` — no `.env` files
-with tokens on disk. The **`launchd/` and `nginx/` directories on
-canonical main indicate the operator's intended distribution shape:
-operator self-hosts this as a long-running service on a Mac or
-Linux box, fronted by nginx**.
+with tokens on disk. The background daemon model (APScheduler, 15-minute poll loop) and
+macOS Keychain credential storage indicate the operator's intended
+distribution shape: operator self-hosts this as a long-running
+service on a Mac or Linux box. Deploy configs (`launchd/`, `nginx/`)
+are not present in the committed tree and would need to be added
+before operator self-hosting.
 
 For full detail see:
 - `README.md` on `origin/main`
@@ -71,11 +73,9 @@ desktop app and not a static site. Distribution shape:
 
 - **No installer, no `.dmg`, no `.app`** — operator runs FastAPI +
   React build behind nginx
-- **launchd plist on `origin/main`** — operator's macOS-server
-  launch config is part of the repo, indicating macOS-server
-  self-host as the canonical deployment
-- **nginx config on `origin/main`** — reverse proxy is part of the
-  shipped surface
+- **Background daemon model** — APScheduler keeps polling Reddit
+  on a fixed cadence; this requires a persistent host, not a
+  static or serverless deployment
 - **Background daemon model** — APScheduler keeps polling Reddit
   on a fixed cadence
 - **macOS Keychain secrets** — runtime credential model assumes
@@ -157,7 +157,7 @@ operator runs one, README documents how others can run their own.
 | Aspect | Posture |
 |---|---|
 | Portfolio status | `Release Frozen (self-hosted service)` |
-| Distribution model | **Long-running service with launchd + nginx**, NOT desktop, NOT static SPA |
+| Distribution model | **Long-running service** (FastAPI + APScheduler daemon), NOT desktop, NOT static SPA |
 | Review cadence | Suspend overdue counting |
 | Resurface conditions | (a) Operator picks Option 1/2/3/4, (b) live service starts producing operational alerts, or (c) operator opens a v1.1 scope packet |
 | Do **not** auto-add to signing cluster | Different distribution shape |
@@ -178,9 +178,9 @@ and static SPAs. Neither fits RedditSentimentAnalyzer:
   the APScheduler ingestion loop or expose the FastAPI service.
 
 The self-hosted service cluster takes its release-readiness shape
-from the explicit `launchd/` + `nginx/` configs in tree. Future
-candidate signals: presence of `Dockerfile` for container-shipped
-services, `systemd/` units for Linux self-host, or `fly.toml` /
+from the persistent-daemon model (APScheduler + FastAPI, macOS
+Keychain credential storage). Future candidate signals: presence of
+`launchd/` plists, `Dockerfile`, `systemd/` units, or `fly.toml` /
 similar PaaS configs.
 
 ---
@@ -193,10 +193,9 @@ similar PaaS configs.
    uncommitted work from before this pass.
 3. Re-run `uv sync && cd frontend && npm install` to confirm
    toolchain.
-4. Audit `launchd/` plist for production-correct paths and user
-   ownership.
-5. Audit `nginx/` config for production-correct upstream + TLS.
-6. **Pick Option 1/2/3/4 before public README polish.**
+4. If self-hosting: author `launchd/` plist and `nginx/` config
+   (these are not present in the committed tree).
+5. **Pick Option 1/2/3/4 before public README polish.**
 
 ---
 
@@ -207,7 +206,7 @@ similar PaaS configs.
 | Last substantive commit | `87c359e` feat: implement full Reddit Sentiment Analyzer (Phases 0-3) |
 | Default branch | `main` |
 | Build system | Python (uv) + FastAPI + React + APScheduler + VADER + Reddit PRAW + keyring (macOS Keychain) |
-| Deploy config on `origin/main` | **`launchd/` plists + `nginx/` config** — operator-intended self-host shape |
+| Deploy config on `origin/main` | None committed — launchd/nginx configs referenced in original disposition are not present in tree |
 | CI | GitHub Actions workflow (`7e045da`) |
 | Release scaffolding | CI workflow only; no runbook docs |
 | Distribution shape | **Self-hosted service** with launchd + nginx |
