@@ -3,10 +3,11 @@
 **Status:** Release Frozen — Python FastAPI + React analytics service
 on `origin/main` with background ingestion daemon (APScheduler),
 VADER sentiment scoring, 6h/12h/1d bucketed spike detection, optional
-Claude escalation, macOS Keychain secrets, plus **`launchd/` and
-`nginx/` deploy configs shipped on canonical main**. **First member
+Claude escalation, and macOS Keychain secrets. **First member
 of the self-hosted service cluster** — distribution shape is "operator
-runs this on a server," not a desktop binary or PWA.
+runs this on a server," not a desktop binary or PWA. (Deploy configs
+such as `launchd/` and `nginx/` are **not present** in the committed
+tree.)
 
 > Disposition uses strict `origin/main` verification.
 > **Introduces a new disposition cluster** for self-hosted services
@@ -138,10 +139,11 @@ Estimated effort: ~1 day refactor.
 
 ## Recommendation (informational)
 
-**Option 1 (operator self-host)** is probably right — the operator
-already shipped `launchd/` + `nginx/` configs, which means the
-deployment shape was deliberate, not aspirational. The marginal
-cost from "shipped Phases 0-3" to "running on a Mac mini" is small.
+**Option 1 (operator self-host)** is probably right — the background
+daemon model (APScheduler + FastAPI, macOS Keychain credential storage)
+signals that the deployment shape was deliberate, not aspirational.
+The marginal cost from "shipped Phases 0-3" to "running on a Mac mini"
+is small (author `launchd/` plist + `nginx/` config, then go).
 
 **Option 2 (OSS self-host)** is also strong because the operator
 audience is a niche-but-real overlap (data analysts, social-media

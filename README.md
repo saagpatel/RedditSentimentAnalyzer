@@ -55,7 +55,7 @@ uv run python -m app.daemon
 
 ## Architecture
 
-The ingestion daemon and the FastAPI server share a single SQLite database. The daemon writes to `posts`, `comments`, and `sentiment_buckets` tables; the API reads from them with no coupling beyond the schema. Bucket aggregation is a scheduled APScheduler job that runs SQL window functions over the raw scores — no in-memory aggregation. The React dashboard polls the REST API on a 60-second interval and renders multi-series Recharts line charts with Zustand state for filter/comparison controls.
+The ingestion daemon and the FastAPI server share a single SQLite database. The daemon writes to `posts`, `comments`, and `sentiment_buckets` tables; the API reads from them with no coupling beyond the schema. Bucket aggregation is a scheduled APScheduler job that runs SQL window functions over the raw scores — no in-memory aggregation. The React dashboard re-fetches from the REST API when the subreddit or time range changes, rendering multi-series Recharts line charts with Zustand state for filter/comparison controls.
 
 ## License
 
