@@ -19,6 +19,8 @@ export default function SpikeDetailPanel({ spike, subreddit, onClose }) {
 
 	useEffect(() => {
 		if (!spike || !subreddit) return;
+		// Fetching a new spike should show the loading state before the async request settles.
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setLoading(true);
 		fetchTopPosts(
 			subreddit,

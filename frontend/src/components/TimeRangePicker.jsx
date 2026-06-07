@@ -4,14 +4,17 @@ const PRESETS = [
 	{ label: "30d", hours: 720 },
 ];
 
+function rangeForPreset(preset, now = Math.floor(Date.now() / 1000)) {
+	return {
+		start: now - preset.hours * 3600,
+		end: now,
+		label: preset.label,
+	};
+}
+
 export default function TimeRangePicker({ activeLabel, onChange }) {
 	function handleClick(preset) {
-		const now = Math.floor(Date.now() / 1000);
-		onChange({
-			start: now - preset.hours * 3600,
-			end: now,
-			label: preset.label,
-		});
+		onChange(rangeForPreset(preset));
 	}
 
 	return (
