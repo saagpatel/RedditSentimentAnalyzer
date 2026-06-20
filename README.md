@@ -1,6 +1,6 @@
 # Reddit Sentiment Analyzer
 
-[![Python](https://img.shields.io/badge/Python-3776ab?style=flat-square&logo=python)](#) [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#)
+[![CI](https://github.com/saagpatel/RedditSentimentAnalyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/saagpatel/RedditSentimentAnalyzer/actions/workflows/ci.yml) [![Python](https://img.shields.io/badge/Python-3776ab?style=flat-square&logo=python)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE)
 
 > Track how the internet feels about anything — without the cloud
 
@@ -19,6 +19,7 @@ Reddit Sentiment Analyzer is a local-first tool that monitors sentiment trends a
 ## Quick Start
 
 ### Prerequisites
+- **macOS required** — credentials are stored in macOS Keychain via `keyring`, and the database path uses `~/Library/Application Support`
 - Python 3.11+
 - Reddit API credentials (client ID + secret from https://www.reddit.com/prefs/apps)
 - `uv` (recommended) or `pip`
@@ -28,6 +29,12 @@ Reddit Sentiment Analyzer is a local-first tool that monitors sentiment trends a
 git clone https://github.com/saagpatel/RedditSentimentAnalyzer
 cd RedditSentimentAnalyzer
 uv sync
+```
+
+### Credentials setup
+Store Reddit API credentials in macOS Keychain before starting the server (one-time step):
+```bash
+uv run python scripts/setup_keyring.py
 ```
 
 ### Usage
@@ -56,6 +63,10 @@ uv run python -m backend.ingestion.ingest_daemon
 ## Architecture
 
 The ingestion daemon and the FastAPI server share a single SQLite database. The daemon writes to `posts`, `comments`, and `sentiment_buckets` tables; the API reads from them with no coupling beyond the schema. Bucket aggregation is a scheduled APScheduler job that runs SQL window functions over the raw scores — no in-memory aggregation. The React dashboard re-fetches from the REST API when the subreddit or time range changes, rendering multi-series Recharts line charts with React state for filter/comparison controls.
+
+## Configuration
+
+Subreddits to track, polling interval, spike detection threshold, and other settings are configured directly in `backend/config.py`. To add subreddits after initial setup, run `uv run python scripts/seed_subreddits.py`.
 
 ## License
 
