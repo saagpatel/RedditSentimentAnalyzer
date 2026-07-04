@@ -41,7 +41,7 @@ function mergeSeriesData(series) {
 }
 
 export default function ComparisonView({ subreddit, timeRange }) {
-	const [input, setInput] = useState("");
+	const [input, setInput] = useState(() => subreddit || "");
 	const [subreddits, setSubreddits] = useState([]);
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -50,9 +50,9 @@ export default function ComparisonView({ subreddit, timeRange }) {
 	// Auto-populate input with current subreddit
 	useEffect(() => {
 		if (subreddit && !input) {
-			setInput(subreddit);
+			Promise.resolve().then(() => setInput(subreddit));
 		}
-	}, [subreddit]);
+	}, [input, subreddit]);
 
 	const loadComparison = useCallback(async () => {
 		const names = input
