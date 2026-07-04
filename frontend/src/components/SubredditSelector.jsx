@@ -13,7 +13,7 @@ export default function SubredditSelector({ value, onChange }) {
 				}
 			})
 			.catch((err) => console.error("Failed to load subreddits:", err));
-	}, []);
+	}, [onChange, value]);
 
 	return (
 		<select

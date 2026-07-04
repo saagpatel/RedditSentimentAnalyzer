@@ -41,7 +41,7 @@ function App() {
 	}, [subreddit, timeRange]);
 
 	useEffect(() => {
-		loadData();
+		Promise.resolve().then(loadData);
 	}, [loadData]);
 
 	return (

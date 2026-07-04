@@ -37,7 +37,7 @@ export default function WordCloudView({ subreddit, timeRange }) {
 	}, [subreddit, timeRange]);
 
 	useEffect(() => {
-		loadTerms();
+		Promise.resolve().then(loadTerms);
 	}, [loadTerms]);
 
 	useEffect(() => {
