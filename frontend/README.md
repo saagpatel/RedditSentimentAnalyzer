@@ -13,11 +13,11 @@ npm install
 npm run dev
 ```
 
-The dev server runs on `http://localhost:5173`. API calls are proxied to the FastAPI backend — see `vite.config.js` for the proxy configuration. The backend must be running before the dashboard will show data.
+The dev server runs on `http://localhost:5173`. API calls go directly to `http://localhost:8000` — see `src/api/client.js` for the base URL. The backend must be running before the dashboard will show data.
 
 ## Environment
 
-No `.env` file is needed. The Vite proxy in `vite.config.js` handles routing `/api` requests to the backend. Reddit credentials are stored in macOS Keychain via the backend — the frontend has no direct access to secrets.
+No `.env` file is needed. `src/api/client.js` sends `/api` requests directly to the backend; `vite.config.js` has no proxy configured. Reddit credentials are stored in macOS Keychain via the backend — the frontend has no direct access to secrets.
 
 ## More
 
