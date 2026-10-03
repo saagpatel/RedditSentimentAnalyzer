@@ -51,6 +51,11 @@ uv run python -m backend.ingestion.ingest_daemon
 
 ## Tech Stack
 
+For credential-free fixture tests and frontend lint/build checks, see
+[Contributing: verification](CONTRIBUTING.md#verification). Starting the backend,
+seeding subreddits, and running ingestion use application data or providers and
+are separate from that verification lane.
+
 | Layer | Technology |
 |-------|------------|
 | Ingestion | PRAW 7.7+, APScheduler 3.10 |
