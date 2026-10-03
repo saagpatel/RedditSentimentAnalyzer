@@ -13,7 +13,7 @@ Portfolio truth currently marks this project as `active` with `boilerplate` cont
 
 | Layer | Technology |
 |-------|------------|
-| Ingestion | PRAW 7.7+, APScheduler 3.10 |
+| Ingestion | PRAW 7.7+, APScheduler 3.10+ |
 | Sentiment | vaderSentiment 3.3+ |
 | Backend | FastAPI 0.111+, Uvicorn, Pydantic v2 |
 | Database | SQLite (local, no server) |
